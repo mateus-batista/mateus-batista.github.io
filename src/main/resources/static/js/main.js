@@ -16,6 +16,25 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
+var unreadCount = 0;
+var onFocus = false;
+var title = "Nosso chat";
+
+$(function() {
+    $(window).focus(function() {
+        console.log('Focus');
+        onFocus = true;
+        unreadCount = 0;
+        document.title = title;
+        $("#favicon").attr("href","/img/favicon.png");
+    });
+
+    $(window).blur(function() {
+        console.log('Blur');
+        onFocus = false;
+    });
+});
+
 function connect(event) {
     username = document.querySelector('#name').value.trim();
 
@@ -48,7 +67,7 @@ function onConnected() {
 
 
 function onError(error) {
-    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+    connectingElement.textContent = 'Não foi possível conectar ao WebSocket server. Por favor atualize a página e tente novamente!';
     connectingElement.style.color = 'red';
 }
 
@@ -77,10 +96,10 @@ function onMessageReceived(payload) {
 
     if(message.type === 'JOIN') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' joined!';
+        message.content = message.sender + ' entrou!';
     } else if (message.type === 'LEAVE') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' left!';
+        message.content = message.sender + ' saiu!';
     } else {
         messageElement.classList.add('chat-message');
 
@@ -95,8 +114,16 @@ function onMessageReceived(payload) {
         var usernameText = document.createTextNode(message.sender);
         usernameElement.appendChild(usernameText);
         messageElement.appendChild(usernameElement);
+        
+        if (!onFocus){
+        	unreadCount++;
+            document.title = '('+unreadCount+') '+title;
+            $("#favicon").attr("href","/img/favicon-alert.png");
+        }
+        
     }
-
+    
+    
     var textElement = document.createElement('p');
     var messageText = document.createTextNode(message.content);
     textElement.appendChild(messageText);
