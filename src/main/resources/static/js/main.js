@@ -119,6 +119,7 @@ function onMessageReceived(payload) {
         	unreadCount++;
             document.title = '('+unreadCount+') '+title;
             $("#favicon").attr("href","/img/favicon-alert.png");
+            $.playSound('/sound/ti-na.mp3');
         }
         
     }
